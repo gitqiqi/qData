@@ -23,6 +23,8 @@ services:
     restart: always
     profiles: [ "all", "light" ]
     env_file: .env
+    entrypoint: ["java", "-Xms256m", "-Xmx1g", "-Dspring.profiles.active=prod", "-jar", "qdata.jar"]
+    command: ["--server.port=8080"]
     environment:
       - TZ=Asia/Shanghai
 #    ports:
@@ -49,6 +51,8 @@ services:
     restart: always
     profiles: [ "all", "light" ]
     env_file: .env
+    entrypoint: ["java", "-Xms256m", "-Xmx768m", "-Dspring.profiles.active=prod", "-jar", "qdata-quality.jar"]
+    command: ["--server.port=8083"]
     environment:
       - TZ=Asia/Shanghai
 #    ports:
@@ -77,6 +81,8 @@ services:
     restart: always
     profiles: [ "all", "light" ]
     env_file: .env
+    entrypoint: ["java", "-Xms256m", "-Xmx768m", "-Dspring.profiles.active=prod", "-jar", "qdata-ai.jar"]
+    command: ["--server.port=8087"]
     environment:
       - TZ=Asia/Shanghai
     #    ports:
