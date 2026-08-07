@@ -102,6 +102,7 @@ docker/dolphinscheduler/resource/default/resources/spark-jar/qdata-etl-3.8.8.jar
 docker/dolphinscheduler/resource/default/resources/spark-jar/qdata-etl.jar
 docker/dolphinscheduler/soft/flink
 docker/dolphinscheduler/soft/spark
+docker/.env
 docker/nginx/dist
 docker/neo4j/data
 docker/qdata-quality/job-log
