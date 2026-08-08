@@ -23,7 +23,15 @@ services:
     restart: always
     profiles: [ "all", "light" ]
     env_file: .env
-    entrypoint: ["java", "-Xms256m", "-Xmx1g", "-Dspring.profiles.active=prod", "-jar", "qdata.jar"]
+    entrypoint:
+      - java
+      - -Xms256m
+      - -Xmx1g
+      - -Dspring.profiles.active=prod
+      - -Dloader.path=/usr/app/jar/lib
+      - -cp
+      - qdata.jar
+      - org.springframework.boot.loader.PropertiesLauncher
     command: ["--server.port=8080"]
     environment:
       - TZ=Asia/Shanghai
@@ -35,6 +43,7 @@ services:
       - ./qdata-server/upload:/usr/app/jar/upload
       - ./qdata-server/application-prod.yml:/usr/app/jar/application-prod.yml
       - ./qdata-server/datax:/usr/app/jar/datax
+      - ./qdata-server/lib:/usr/app/jar/lib
     depends_on:
       redis:
         condition: service_healthy
