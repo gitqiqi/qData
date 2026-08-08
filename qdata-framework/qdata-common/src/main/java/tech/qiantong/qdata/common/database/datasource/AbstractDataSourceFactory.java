@@ -66,13 +66,23 @@ public abstract class AbstractDataSourceFactory implements DataSourceFactory {
     }
 
     public DataSource createDataSource(DbQueryProperty property) {
-        SimpleDataSource dataSource = null;
-        if (DbType.SQL_SERVER2008.getDb().equals(property.getDbType()) && tech.qiantong.qdata.common.utils.StringUtils.startsWith(property.trainToJdbcUrl(), "jdbc:jtds:sqlserver")) {
-            dataSource = new SimpleDataSource(property.trainToJdbcUrl(), property.getUsername(), property.getPassword(), "net.sourceforge.jtds.jdbc.Driver");
-        } else {
-            dataSource = new SimpleDataSource(property.trainToJdbcUrl(), property.getUsername(), property.getPassword());
+        String jdbcUrl = property.trainToJdbcUrl();
+        String driverClassName = getDriverClassName(property, jdbcUrl);
+        if (!StringUtils.isEmpty(driverClassName)) {
+            return new SimpleDataSource(jdbcUrl, property.getUsername(), property.getPassword(), driverClassName);
         }
-        return dataSource;
+        return new SimpleDataSource(jdbcUrl, property.getUsername(), property.getPassword());
+    }
+
+    private String getDriverClassName(DbQueryProperty property, String jdbcUrl) {
+        if (DbType.POSTGRE_SQL.getDb().equals(property.getDbType())) {
+            return "org.postgresql.Driver";
+        }
+        if (DbType.SQL_SERVER2008.getDb().equals(property.getDbType())
+                && tech.qiantong.qdata.common.utils.StringUtils.startsWith(jdbcUrl, "jdbc:jtds:sqlserver")) {
+            return "net.sourceforge.jtds.jdbc.Driver";
+        }
+        return null;
     }
 
     protected String trainToJdbcUrl(DbQueryProperty property) {

@@ -57,7 +57,7 @@ public final class DataXJsonBuilder {
     private static Map<String, Object> buildReader(Map<String, Object> readerNodeJsonMap, Map<String, Object> writerNodeJsonMap) {
         Map<String, Object> readerDatasource = parseDatasource(readerNodeJsonMap, "readerDatasource");
         Map<String, Object> reader = new HashMap<>();
-        reader.put("name", "rdbmsreader");
+        reader.put("name", getReaderPluginName(readerDatasource));
         reader.put("parameter", buildParameter(readerNodeJsonMap, writerNodeJsonMap, readerDatasource,
                 "columns", "table_name", true));
         return reader;
@@ -69,7 +69,7 @@ public final class DataXJsonBuilder {
     private static Map<String, Object> buildWriter(Map<String, Object> writerNodeJsonMap) {
         Map<String, Object> writerDatasource = parseDatasource(writerNodeJsonMap, "writerDatasource");
         Map<String, Object> writer = new HashMap<>();
-        writer.put("name", "rdbmswriter");
+        writer.put("name", getWriterPluginName(writerDatasource));
         writer.put("parameter", buildParameter(writerNodeJsonMap, writerNodeJsonMap, writerDatasource,
                 "target_columns", "target_table_name", false));
         return writer;
@@ -138,6 +138,20 @@ public final class DataXJsonBuilder {
      */
     private static Map<String, Object> parseDatasource(Map<String, Object> nodeJsonMap, String datasourceKey) {
         return JSONUtils.convertTaskDefinitionJsonMap(String.valueOf(nodeJsonMap.get(datasourceKey)));
+    }
+
+    private static String getReaderPluginName(Map<String, Object> datasource) {
+        if (DbType.POSTGRE_SQL.getDb().equals(String.valueOf(datasource.get("datasourceType")))) {
+            return "postgresqlreader";
+        }
+        return "rdbmsreader";
+    }
+
+    private static String getWriterPluginName(Map<String, Object> datasource) {
+        if (DbType.POSTGRE_SQL.getDb().equals(String.valueOf(datasource.get("datasourceType")))) {
+            return "postgresqlwriter";
+        }
+        return "rdbmswriter";
     }
 
     /**

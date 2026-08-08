@@ -624,6 +624,9 @@ public class DataDevelopmentJdbcTaskRunner {
         if (StringUtils.equals(DbType.ORACLE.getDb(), dbType) || StringUtils.equals(DbType.ORACLE_12C.getDb(), dbType)) {
             return "oracle.jdbc.OracleDriver";
         }
+        if (StringUtils.equals(DbType.POSTGRE_SQL.getDb(), dbType)) {
+            return "org.postgresql.Driver";
+        }
         if (StringUtils.equals(DbType.DM8.getDb(), dbType)) {
             return "dm.jdbc.driver.DmDriver";
         }
