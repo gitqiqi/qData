@@ -19,9 +19,6 @@
 <template>
   <div class="app-container stagingIndex">
 
-    <!-- Important reminder for presentation environment -->
-    <GuideTip tip-id="index" />
-
     <el-row :gutter="15">
       <el-col :xs="24" :sm="24" :md="18" :lg="18" class="home-gutter">
         <div class="userInfo module-1">
