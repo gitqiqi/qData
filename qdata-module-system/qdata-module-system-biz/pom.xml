@@ -83,6 +83,13 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>tech.qiantong</groupId>
+            <artifactId>qdata-module-da-api</artifactId>
+            <version>${qdata.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
         <!-- Scheduled tasks-->
         <dependency>
             <groupId>tech.qiantong</groupId>

@@ -28,6 +28,23 @@ user:
 datasource:
   type: ${DB_TYPE}
 
+qdata:
+  company-org-sync:
+    enabled: true
+    cron: "0 0 * * * ?"
+    datasource-name: db
+    source-table: bi.dim_org_admin_user_info_hf
+    fallback-password: qdata@123
+    default-role-id: 7
+    default-role-name: 体验用户
+    role-menu-template-role-id: 7
+    auto-create-role: true
+    disable-missing-users: true
+    disable-non-source-users: true
+    disable-missing-departments: true
+    disable-non-source-departments: true
+    operator: company-org-sync
+
 # Spring configuration
 spring:
   # Redis configuration

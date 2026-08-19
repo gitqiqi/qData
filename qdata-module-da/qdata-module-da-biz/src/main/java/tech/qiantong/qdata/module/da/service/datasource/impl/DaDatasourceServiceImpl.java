@@ -453,6 +453,26 @@ public class DaDatasourceServiceImpl extends ServiceImpl<DaDatasourceMapper, DaD
     public DaDatasourceRespDTO getDatasourceById(Long id) {
         DaDatasourceRespDTO dto = new DaDatasourceRespDTO();
         DaDatasourceDO daDatasourceDO = daDatasourceMapper.selectById(id);
+        if (daDatasourceDO == null) {
+            return null;
+        }
+        org.springframework.beans.BeanUtils.copyProperties(daDatasourceDO, dto);
+        return dto;
+    }
+
+    @Override
+    public DaDatasourceRespDTO getDatasourceByName(String datasourceName) {
+        if (StringUtils.isBlank(datasourceName)) {
+            return null;
+        }
+        LambdaQueryWrapper<DaDatasourceDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(DaDatasourceDO::getDatasourceName, datasourceName);
+        List<DaDatasourceDO> datasourceList = daDatasourceMapper.selectList(queryWrapper);
+        if (datasourceList == null || datasourceList.isEmpty()) {
+            return null;
+        }
+        DaDatasourceDO daDatasourceDO = datasourceList.get(0);
+        DaDatasourceRespDTO dto = new DaDatasourceRespDTO();
         org.springframework.beans.BeanUtils.copyProperties(daDatasourceDO, dto);
         return dto;
     }

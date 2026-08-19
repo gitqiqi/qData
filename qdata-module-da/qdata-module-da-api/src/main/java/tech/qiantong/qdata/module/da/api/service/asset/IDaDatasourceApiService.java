@@ -39,6 +39,15 @@ public interface IDaDatasourceApiService {
 
 
     public DaDatasourceRespDTO getDatasourceById(Long id);
+
+    /**
+     * Get datasource by datasource name.
+     *
+     * @param datasourceName datasource name
+     * @return datasource info
+     */
+    public DaDatasourceRespDTO getDatasourceByName(String datasourceName);
+
     public boolean creaDatasourceTeTableApi(DatasourceCreaTeTableReqDTO datasourceCreaTeTableReqDTO);
     public boolean creaDatasourceTeTableApi(DbQuery dbQuery, DbQueryProperty dbQueryProperty, DatasourceCreaTeTableReqDTO creaTeTableReqDTO);
     public boolean creaDatasourceTeTableListApi(DatasourceCreaTeTableListReqDTO datasourceCreaTeTableListReqDTO);

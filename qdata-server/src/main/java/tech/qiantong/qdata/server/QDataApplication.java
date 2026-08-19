@@ -27,6 +27,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Start the program
@@ -40,6 +41,7 @@ import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 @EnableNeo4jRepositories(basePackages = "tech.qiantong.qdata.neo4j.repository")
 @EntityScan(basePackages = "tech.qiantong.qdata.neo4j.node")   // Node/relationship
 @EnableAspectJAutoProxy(proxyTargetClass = true)
+@EnableScheduling
 public class QDataApplication
 {
     public static final String BRAND_BLUE = "\u001B[38;2;29;80;163m";

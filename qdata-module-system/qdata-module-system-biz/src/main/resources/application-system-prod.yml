@@ -20,3 +20,20 @@ oauth2:
   clientSecret: 82e25a80db5f4a13afb2ee8b2cf6d08b
   serverUrl: http://127.0.0.1:8899
   redirect401Url: http://127.0.0.1/401
+
+qdata:
+  company-org-sync:
+    enabled: false
+    cron: "0 0 * * * ?"
+    datasource-name: db
+    source-table: bi.dim_org_admin_user_info_hf
+    fallback-password: qdata@123
+    default-role-id: 7
+    default-role-name: 体验用户
+    role-menu-template-role-id: 7
+    auto-create-role: true
+    disable-missing-users: true
+    disable-non-source-users: true
+    disable-missing-departments: true
+    disable-non-source-departments: true
+    operator: company-org-sync
