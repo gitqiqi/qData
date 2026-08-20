@@ -120,20 +120,71 @@ public class CompanyOrgSyncServiceImpl implements ICompanyOrgSyncService {
     }
 
     private DaDatasourceRespDTO resolveDatasource() {
+        List<DaDatasourceRespDTO> datasourceList = datasourceApiService.getDatasourceList();
         DaDatasourceRespDTO datasource = null;
         if (properties.getDatasourceId() != null) {
-            datasource = datasourceApiService.getDatasourceById(properties.getDatasourceId());
+            datasource = findDatasourceById(datasourceList, properties.getDatasourceId());
         } else if (StringUtils.isNotBlank(properties.getDatasourceName())) {
-            datasource = datasourceApiService.getDatasourceByName(properties.getDatasourceName());
+            datasource = findDatasourceByName(datasourceList, properties.getDatasourceName());
         }
         if (datasource == null) {
-            throw new ServiceException("Company org sync datasource does not exist");
+            datasource = findUniquePostgreDatasource(datasourceList);
+            if (datasource != null) {
+                log.warn("Company org sync datasource '{}' not found, fallback to unique PostgreSQL datasource '{}' (id={})",
+                        properties.getDatasourceName(), datasource.getDatasourceName(), datasource.getId());
+            }
+        }
+        if (datasource == null) {
+            throw new ServiceException("Company org sync datasource does not exist: id="
+                    + properties.getDatasourceId() + ", name=" + properties.getDatasourceName());
         }
         DbType dbType = DbType.getDbType(datasource.getDatasourceType());
         if (dbType != DbType.POSTGRE_SQL) {
             throw new ServiceException("Company org sync only supports PostgreSQL datasource");
         }
         return datasource;
+    }
+
+    private DaDatasourceRespDTO findDatasourceById(List<DaDatasourceRespDTO> datasourceList, Long datasourceId) {
+        if (datasourceList == null || datasourceId == null) {
+            return null;
+        }
+        for (DaDatasourceRespDTO datasource : datasourceList) {
+            if (datasource != null && Objects.equals(datasource.getId(), datasourceId)) {
+                return datasource;
+            }
+        }
+        return null;
+    }
+
+    private DaDatasourceRespDTO findDatasourceByName(List<DaDatasourceRespDTO> datasourceList, String datasourceName) {
+        if (datasourceList == null || StringUtils.isBlank(datasourceName)) {
+            return null;
+        }
+        String targetName = StringUtils.trim(datasourceName);
+        for (DaDatasourceRespDTO datasource : datasourceList) {
+            if (datasource == null || StringUtils.isBlank(datasource.getDatasourceName())) {
+                continue;
+            }
+            if (StringUtils.equalsIgnoreCase(StringUtils.trim(datasource.getDatasourceName()), targetName)) {
+                return datasource;
+            }
+        }
+        return null;
+    }
+
+    private DaDatasourceRespDTO findUniquePostgreDatasource(List<DaDatasourceRespDTO> datasourceList) {
+        if (datasourceList == null || datasourceList.isEmpty()) {
+            return null;
+        }
+        List<DaDatasourceRespDTO> postgreDatasources = datasourceList.stream()
+                .filter(this::isPostgreDatasource)
+                .collect(Collectors.toList());
+        return postgreDatasources.size() == 1 ? postgreDatasources.get(0) : null;
+    }
+
+    private boolean isPostgreDatasource(DaDatasourceRespDTO datasource) {
+        return datasource != null && DbType.POSTGRE_SQL.getDb().equals(datasource.getDatasourceType());
     }
 
     private List<CompanyUserRow> querySourceRows(DaDatasourceRespDTO datasource, String sourceTable) {

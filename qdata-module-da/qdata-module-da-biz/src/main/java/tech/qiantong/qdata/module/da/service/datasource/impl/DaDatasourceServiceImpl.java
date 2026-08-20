@@ -1283,6 +1283,11 @@ public class DaDatasourceServiceImpl extends ServiceImpl<DaDatasourceMapper, DaD
         return BeanUtils.toBean(daDatasourceDOS, DaDatasourceRespDTO.class);
     }
 
+    @Override
+    public List<DaDatasourceRespDTO> getDatasourceList() {
+        return BeanUtils.toBean(getDaDatasourceList(), DaDatasourceRespDTO.class);
+    }
+
     private List<DaDiscoveryTableDO> fetchDiscoveryTableList(DaDiscoveryTaskRespVO daDiscoveryTaskDO, Long daDiscoveryTaskLog) {
         iDaDiscoveryLogBodyService.taskLogAppend(daDiscoveryTaskLog,
                 "Begin loading the discovery task table snapshot list from the local database; task ID: " + daDiscoveryTaskDO.getId());

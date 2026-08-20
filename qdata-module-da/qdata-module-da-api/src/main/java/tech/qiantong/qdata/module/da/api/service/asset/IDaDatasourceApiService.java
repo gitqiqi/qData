@@ -85,4 +85,11 @@ public interface IDaDatasourceApiService {
      * @return
      */
     List<DaDatasourceRespDTO> getDatabaseListByIds(List<Long> ids);
+
+    /**
+     * Get all datasource list.
+     *
+     * @return datasource list
+     */
+    List<DaDatasourceRespDTO> getDatasourceList();
 }

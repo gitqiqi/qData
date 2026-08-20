@@ -136,6 +136,11 @@
                 </el-button>
               </el-col>
               <el-col :span="1.5">
+                <el-button type="primary" plain icon="Refresh" :loading="syncLoading" @click="handleSyncCompanyUsers"
+                  v-hasPermi="['system:user:import']">同步公司用户
+                </el-button>
+              </el-col>
+              <el-col :span="1.5">
                 <el-button type="warning" plain icon="Download" @click="handleExport"
                   v-hasPermi="['system:user:export']">{{ td('common.button.export') }}
                 </el-button>
@@ -351,6 +356,7 @@ import {
   updateUser,
   addUser,
   deptTreeSelect,
+  syncCompanyOrgUsers,
 } from "@/api/system/system/user.js";
 import { computed } from "vue"
 import useDefaultLang from "@/composables/useDefaultLang";
@@ -359,6 +365,7 @@ const router = useRouter();
 const { proxy } = getCurrentInstance();
 const submitLoading = ref(false);
 const importLoading = ref(false);
+const syncLoading = ref(false);
 const { sys_normal_disable, sys_user_sex } = proxy.useDict(
   "sys_normal_disable",
   "sys_user_sex"
@@ -634,6 +641,26 @@ function handleExport() {
     },
     `user_${new Date().getTime()}.xlsx`
   );
+}
+
+/** Company user synchronization action */
+async function handleSyncCompanyUsers() {
+  if (syncLoading.value) return;
+  try {
+    await proxy.$modal.confirm("确认从 PostgreSQL 同步公司用户、组织和角色吗？");
+    syncLoading.value = true;
+    const response = await syncCompanyOrgUsers();
+    const result = response?.data || {};
+    proxy.$modal.msgSuccess(
+      `同步完成：来源 ${result.sourceRows ?? 0} 条，新增用户 ${result.userCreated ?? 0} 个，更新用户 ${result.userUpdated ?? 0} 个，停用用户 ${result.userDisabled ?? 0} 个。`
+    );
+    getDeptTree();
+    getList();
+  } catch (error) {
+    // Cancellation and backend errors are handled by the shared request layer.
+  } finally {
+    syncLoading.value = false;
+  }
 }
 
 /** User status modification  */

@@ -75,6 +75,14 @@ export function resetUserPwd(userId, password) {
     });
 }
 
+// Synchronize company organization users from PostgreSQL
+export function syncCompanyOrgUsers() {
+    return request({
+        url: '/system/company-org-sync/sync',
+        method: 'post'
+    });
+}
+
 // User status modification
 export function changeUserStatus(userId, status) {
     const data = {
