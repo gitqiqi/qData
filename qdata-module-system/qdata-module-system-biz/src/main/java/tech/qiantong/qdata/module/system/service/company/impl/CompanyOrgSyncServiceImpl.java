@@ -216,9 +216,11 @@ public class CompanyOrgSyncServiceImpl implements ICompanyOrgSyncService {
         user.authId = limit(toText(row.get("admin_id")), AUTH_ID_MAX_LENGTH);
         user.mobile = normalizeMobile(toText(row.get("mobile")));
         user.sourceStatus = toText(row.get("status"));
-        user.nickName = limit(firstNonBlank(toText(row.get("user_name")), user.authId), NICK_NAME_MAX_LENGTH);
+        user.sourceUserName = limit(toText(row.get("user_name")), NICK_NAME_MAX_LENGTH);
+        user.nickName = limit(firstNonBlank(user.sourceUserName, user.authId), NICK_NAME_MAX_LENGTH);
         user.employeeId = limit(toText(row.get("employee_id")), USER_NAME_MAX_LENGTH);
-        user.account = limit(firstNonBlank(user.employeeId, user.mobile, user.authId), USER_NAME_MAX_LENGTH);
+        // Use the company mobile as the qData login account. admin_id remains the sync identity.
+        user.account = limit(user.mobile, USER_NAME_MAX_LENGTH);
         user.deptId = toLong(row.get("admin_organ_id"));
         user.deptName = limit(toText(row.get("organ_name")), DEPT_NAME_MAX_LENGTH);
         user.sourceParentId = toLong(row.get("parent_id"));
@@ -456,7 +458,7 @@ public class CompanyOrgSyncServiceImpl implements ICompanyOrgSyncService {
         Set<String> sourceAuthIds = new HashSet<>();
         Set<String> sourceAccounts = new HashSet<>();
         for (CompanyUserRow row : sourceRows) {
-            if (!isValidUserRow(row) || isAdminAccount(row.account)) {
+            if (!isValidUserRow(row) || isAdminSourceRow(row)) {
                 result.incrementUserSkipped();
                 continue;
             }
@@ -615,7 +617,7 @@ public class CompanyOrgSyncServiceImpl implements ICompanyOrgSyncService {
     private boolean isValidUserRow(CompanyUserRow row) {
         return row != null
                 && StringUtils.isNotBlank(row.authId)
-                && StringUtils.isNotBlank(row.account)
+                && StringUtils.isNotBlank(row.mobile)
                 && row.deptId != null
                 && row.deptId > 0;
     }
@@ -678,6 +680,10 @@ public class CompanyOrgSyncServiceImpl implements ICompanyOrgSyncService {
 
     private boolean isAdminAccount(String userName) {
         return "admin".equalsIgnoreCase(StringUtils.trim(userName));
+    }
+
+    private boolean isAdminSourceRow(CompanyUserRow row) {
+        return row != null && isAdminAccount(row.sourceUserName);
     }
 
     private boolean isAdminUser(SysUser user) {
@@ -791,6 +797,7 @@ public class CompanyOrgSyncServiceImpl implements ICompanyOrgSyncService {
         private String authId;
         private String employeeId;
         private String account;
+        private String sourceUserName;
         private String nickName;
         private String mobile;
         private String sourceStatus;
